@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        height: 100%;
+        overflow-x: hidden;
+        background-color: #ffffff;
+        color: #1f1f1f;
+        cursor: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"%3E%3Cpath fill="%23FFFFFF" d="M0 0h24v24H0z" fill="none"/%3E%3Cpath fill="%23FFFFFF" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10-10-10-4.48-10-10S17.52 2 12 2zm-1 14.5v-5h2v5h-2zm0-7V7h2v2.5h-2z"/%3E%3C/svg%3E'),
+          auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .header {
+        overflow: hidden;
+        background-color: #ffffff;
+        padding: 20px 10px;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .header a {
+        color: black;
+        text-align: center;
+        padding: 12px;
+        text-decoration: none;
+        font-size: 18px;
+        line-height: 25px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .header a.logo {
+        font-size: 25px;
+        font-weight: bold;
+        flex-shrink: 0;
+      }
+
+      .header a:hover {
+        background-color: #b69d74; /* Gold color */
+        color: white;
+      }
+
+      .header a.active {
+        background-color: #b69d74;
+        color: white;
+      }
+
+      .header-right {
+        display: flex;
+        gap: 15px;
+      }
+
+      .burger-menu {
+        display: none;
+        font-size: 30px;
+        cursor: pointer;
+        color: black;
+        z-index: 11;
+        padding: 10px;
+      }
+
+      @media screen and (max-width: 768px) {
+        .header a:not(.logo) {
+          display: none;
+        }
+
+        .burger-menu {
+          display: block;
+        }
+
+        .mobile-menu {
+          display: none;
+          position: fixed;
+          top: 80px;
+          left: 0;
+          width: 100%;
+          background-color: #ffffff;
+          z-index: 10;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu.show {
+          display: block;
+        }
+
+        .mobile-menu a {
+          display: block;
+          padding: 15px;
+          border-bottom: 1px solid #ddd;
+          text-align: left;
+          font-size: 18px;
+          color: black;
+          text-decoration: none;
+          transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+          background-color: #b69d74; /* Gold color */
+          color: white;
+        }
+      }
+
+      .container {
+        position: relative;
+        top: 80px;
+        width: 100vw;
+        height: calc(100vh - 80px);
+        display: flex;
+        overflow: hidden;
+      }
+
+      .split {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 50%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: width 0.7s ease;
+      }
+
+      .left {
+        left: 0;
+        background-color: #b69d74;
+      }
+
+      .right {
+        right: 0;
+        background-color: #1f2839;
+      }
+
+      .text-container {
+        position: relative;
+        text-align: center;
+        z-index: 2;
+        transition: opacity 0.7s ease;
+        opacity: 1;
+        color: #ffffff;
+      }
+
+      .text-container.hidden {
+        opacity: 0;
+      }
+
+      .left .text-container h1,
+      .right .text-container h1 {
+        font-size: 3rem;
+        font-weight: bold;
+      }
+
+      .left .text-container p,
+      .right .text-container p {
+        font-size: 1.2rem;
+      }
+
+      .divider {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 600px;
+        height: 600px;
+        background: url("indhold/baggrund.png") no-repeat center center/cover;
+        z-index: 3;
+        transform: translate(-50%, -50%);
+        transition: background-image 0.7s ease;
+        opacity: 1;
+      }
+
+      .left:hover {
+        width: 55%;
+      }
+
+      .right:hover {
+        width: 55%;
+      }
+
+      .scroll-indicator {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 35px;
+        height: 60px;
+        border: 2px solid #ffffff;
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.8;
+      }
+
+      .scroll-indicator .scroll-wheel {
+        width: 5px;
+        height: 10px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        animation: scroll 1.5s infinite;
+      }
+
+      @keyframes scroll {
+        0% {
+          transform: translateY(-5px);
+          opacity: 0;
+        }
+
+        50% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+
+        100% {
+          transform: translateY(5px);
+          opacity: 0;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          position: relative;
+          top: 60px;
+          height: auto;
+          width: 100%;
+        }
+
+        .split {
+          width: 100%;
+          height: 50%;
+          position: relative;
+        }
+
+        .left,
+        .right {
+          height: 50vh;
+        }
+
+        .text-container {
+          padding: 20px;
+        }
+
+        .text-container h1 {
+          font-size: 2rem;
+        }
+
+        .text-container p {
+          font-size: 1rem;
+        }
+
+        .divider {
+          display: none;
+        }
+
+        .left:hover,
+        .right:hover {
+          width: 100%;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .icon-section {
+          flex-direction: column;
+          gap: 30px;
+          padding: 20px;
+        }
+
+        .contact-form-container {
+          width: 95%;
+        }
+      }
+
+      .things-container {
+        position: relative;
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        text-align: center;
+      }
+
+      .things-container .text-content {
+        font-size: 1.8rem;
+        line-height: 1.8;
+        max-width: 80%;
+      }
+
+      @media screen and (max-width: 768px) {
+        .things-container .text-content {
+          font-size: 1.4rem;
+          line-height: 1.5;
+        }
+      }
+
+      .cta-buttons {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+      }
+
+      .cta-buttons a {
+        text-decoration: none;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      .cta-buttons a:focus,
+      .cta-buttons a:hover {
+        transform: scale(1.05) rotate(3deg);
+      }
+
+      .cta-buttons .portfolio-button {
+        background-color: #b69d74;
+        color: white;
+      }
+
+      .cta-buttons .portfolio-button:hover,
+      .cta-buttons .portfolio-button:focus {
+        background-color: #a08663;
+        outline: 2px solid #b69d74;
+      }
+
+      .cta-buttons .download-button {
+        background-color: #1f2839;
+        color: white;
+      }
+
+      .cta-buttons .download-button:hover,
+      .cta-buttons .download-button:focus {
+        background-color: #162037;
+        outline: 2px solid #1f2839;
+      }
+
+      .golden-spaceline {
+        width: 90%;
+        height: 2px;
+        background-color: #b69d74;
+        margin: 40px auto;
+      }
+
+      .icon-section {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        padding: 40px;
+        text-align: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 20px;
+      }
+
+      .icon-box {
+        width: 30%;
+        max-width: 300px;
+        padding: 20px;
+        border-radius: 10px;
+      }
+
+      .icon-box img {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 15px;
+      }
+
+      .icon-box h3 {
+        color: #b69d74;
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+      }
+
+      .icon-box p {
+        color: #1f1f1f;
+        font-size: 1.1rem;
+        line-height: 1.5;
+      }
+
+      @media screen and (max-width: 768px) {
+        .icon-box {
+          width: 90%;
+          max-width: none;
+          margin: 0 auto;
+        }
+
+        .icon-box p {
+          font-size: 1rem;
+        }
+      }
+
+      .contact-form-container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .contact-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid #b69d74;
+      }
+
+      .contact-form label {
+        font-size: 18px;
+        margin: 10px 0 5px;
+        width: 100%;
+        text-align: left;
+        color: #1f1f1f;
+      }
+
+      .contact-form input,
+      .contact-form textarea {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #b69d74;
+        border-radius: 5px;
+        background-color: #ffffff;
+        color: #000000;
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+
+      .contact-form button {
+        background-color: #b69d74;
+        color: #ffffff;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 30px;
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .contact-form button:hover {
+        background-color: #ffffff;
+        color: #001d38;
+        border: 1px solid #b69d74;
+      }
+
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 1s ease-out, transform 1s ease-out;
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <a href="index.html" class="logo">Noor Shamasneh</a>
+      <span class="burger-menu" onclick="toggleMenu()">&#9776;</span>
+      <div class="header-right">
+        <a href="aboutme.html">About me</a>
+        <a href="photos.html">Photos</a>
+        <a href="projects.html">Projects</a>
+        <a href="contactme.html" class="active">Contact me</a>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="aboutme.html">About me</a>
+      <a href="photos.html">Photos</a>
+      <a href="projects.html">Projects</a>
+      <a href="contactme.html" class="active">Contact me</a>
+    </div>
+
+    <div class="container fade-in" id="slider-container">
+      <div class="split left" id="left-side">
+        <div class="text-container" id="left-text">
+          <h1>Webdeveloper</h1>
+          <p>Product designer specializing in UI design and design systems.</p>
+        </div>
+      </div>
+
+      <div class="split right" id="right-side">
+        <div class="text-container" id="right-text">
+          <h1>&lt;coder&gt;</h1>
+          <p>
+            Front-end developer who writes clean, elegant, and efficient code.
+          </p>
+        </div>
+      </div>
+
+      <div class="divider" id="divider"></div>
+
+      <div class="scroll-indicator">
+        <div class="scroll-wheel"></div>
+      </div>
+    </div>
+
+    <div class="things-container fade-in" id="things">
+      <div class="text-content">
+        <p>
+          <b>About me</b><br />
+          As a multimedia designer, I genuinely love coding and building
+          websites. For me, it’s all about crafting user experiences that feel
+          good and look great at the same time. I enjoy working on both the
+          creative and the technical sides of web development—it's exciting to
+          mix design with problem-solving and see ideas come to life on the
+          screen.
+        </p>
+      </div>
+      <div class="cta-buttons">
+        <a href="#projects" class="portfolio-button">See Portfolio</a>
+        <a href="CV.docx" class="download-button" download>Download CV</a>
+      </div>
+    </div>
+
+    <div class="golden-spaceline"></div>
+
+    <div class="icon-section">
+      <div class="icon-box fade-in">
+        <h3>UX/UI designs</h3>
+        <p>
+          Udvikling af responsive websites, både frontend og backend. Arbejde
+          med HTML, CSS, Javascript og eventuelt cms systemer såsom wordpress.
+          Animationer og interaktive elementer for at forbedre brugeroplevelsen.
+        </p>
+      </div>
+      <div class="icon-box fade-in">
+        <h3>Webudvikling</h3>
+        <p>
+          Design af brugervenlige og æstetiske tiltalende brugergrænseflader.
+          Prototyper og wireframes for at præsentere idéer.
+        </p>
+      </div>
+      <div class="icon-box fade-in">
+        <h3>Fritid</h3>
+        <p>
+          I min fritid nyder jeg at tilbringe tid med familie og venner. Samt
+          kan jeg godt lide at side og kode projektor bare forsjov.
+        </p>
+      </div>
+    </div>
+
+    <div class="golden-spaceline"></div>
+
+    <div class="contact-form-container fade-in">
+      <h2 style="text-align: center">Get in Touch</h2>
+      <form
+        action="https://formspree.io/f/xnnqavyy"
+        method="POST"
+        class="contact-form"
+      >
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="6" required></textarea>
+
+        <button type="submit">Send Message</button>
+      </form>
+    </div>
+
+    <footer
+      style="
+        text-align: center;
+        padding: 20px 0;
+        margin-top: 40px;
+        font-size: 14px;
+        color: #1f1f1f;
+      "
+    >
+      © 2024 Noor Shamasneh. All Rights Reserved.
+    </footer>
+
+    <script>
+      function toggleMenu() {
+        const mobileMenu = document.getElementById("mobileMenu");
+        mobileMenu.classList.toggle("show");
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const elements = document.querySelectorAll(".fade-in");
+
+        function checkVisibility() {
+          elements.forEach((element) => {
+            const rect = element.getBoundingClientRect();
+            if (rect.top <= window.innerHeight - 100) {
+              element.classList.add("visible");
+            }
+          });
+        }
+
+        window.addEventListener("scroll", checkVisibility);
+        checkVisibility();
+      });
+    </script>
+  </body>
+</html>
